@@ -1,0 +1,30 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 1,
+    "showFPS" : true,
+    "frameRate" : 60,
+    "id" : "gameCanvas",
+    "renderMode" : 0,
+    "noCache" : 1,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["cocos2d"],
+
+    "jsList" : [
+        "src/Common/GameConst.js",
+        "src/Common/Utils.js",
+
+        "src/app.js",
+        "src/GameScene.js",
+        "src/ItemList.js",
+        "src/LoginScene.js",
+        "src/resource.js",
+
+        "src/AnySDKTest/jsb_anysdk.js",
+        "src/AnySDKTest/jsb_anysdk_constants.js",
+        "src/AnySDKTest/PluginManager.js",
+
+        "src/QQBrowserTest/Item.js"
+    ]
+}

@@ -1,0 +1,28 @@
+{
+  "description": "灰常厉害的游戏",
+  "design_resolution": {
+    "height": 450,
+    "policy": "SHOW_ALL",
+    "width": 800
+  },
+  "engine": "js",
+  "engine_version": "v3",
+  "entry_file": "main.js",
+  "game_name": "EnCaLDemo",
+  "hahha": "1312",
+  "orientation": "landscape",
+  "package_name": "org.cocos2dx.unittest.v3",
+  "runtime_version": "3.3.0.2",
+  "security": {
+    "password": "unittest",
+    "third_party": {
+      "liebao": {
+        "clientId": "195745422",
+        "clientSecret": "7EE5C48EB3787173810DB3877FCA0CEF",
+        "redirectUri": "cocoscsdauthcallback://cocoscs"
+      }
+    }
+  },
+  "version_code": "1",
+  "version_name": "1.0.0"
+}
