@@ -26,7 +26,6 @@ var QQBrowserPayItem = cc.TableViewCell.extend({
         layer.setPosition(cc.p(0, 0));
         layer.setAnchorPoint(cc.p(0, 0));
         this.addChild(layer);
-
         name.setPosition(cc.p(120, 40));
 
         var self = this;
@@ -39,14 +38,22 @@ var QQBrowserPayItem = cc.TableViewCell.extend({
         menu.setPosition(cc.p(0, 0));
         menu.setAnchorPoint(cc.p(0, 0));
         layer.addChild(menu);
+
         var icon = new cc.Sprite("res/default_photo.png");
         icon.setAnchorPoint(cc.p(0, 0));
         layer.addChild(icon);
         icon.setPosition(cc.p(10, 10));
+        var self = this;
         cc.loader.loadImg(iconUrl, {width : 60, height : 60}, function (error, texture) {
             if (!error) {
-                icon.initWithTexture(texture);
-                icon.setAnchorPoint(cc.p(0, 0));
+                if (cc.sys.isObjectValid && cc.sys.isObjectValid(self)) {
+                    icon.initWithTexture(texture);
+                    icon.setAnchorPoint(cc.p(0, 0));
+                } else {
+                    cc.log("Oops, loadImg " + iconUrl + " associated node isn't valid!");
+                }
+            } else {
+                cc.log("load image fail please check , url : " + iconUrl);
             }
         });
     },
@@ -133,10 +140,17 @@ var QQBrowserFriendItem = cc.TableViewCell.extend({
         icon.setAnchorPoint(0, 0);
         layer.addChild(icon);
         icon.setPosition(cc.p(10, 10));
+        var self = this;
         cc.loader.loadImg(iconUrl, {width : 60, height : 60}, function (error, texture) {
             if (!error) {
-                icon.initWithTexture(texture);
-                icon.setAnchorPoint(cc.p(0, 0));
+                if (cc.sys.isObjectValid && cc.sys.isObjectValid(self)) {
+                    icon.initWithTexture(texture);
+                    icon.setAnchorPoint(cc.p(0, 0));
+                } else {
+                    cc.log("Oops, loadImg " + iconUrl + " associated node isn't valid!");
+                }
+            } else {
+                cc.log("load image fail please check , url : " + iconUrl);
             }
         });
     }
