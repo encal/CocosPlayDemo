@@ -87,7 +87,6 @@ var __Utils = cc.Class.extend({
                     event: cc.EventListener.TOUCH_ONE_BY_ONE,
                     swallowTouches: true,
                     onTouchBegan: function(touch,event){
-                        self.toggleToastTouch(false);
                         self.removeTipsFromCurrentScene();
 
                         return true;
