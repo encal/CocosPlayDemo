@@ -33,7 +33,7 @@ var __Utils = cc.Class.extend({
     toastListener: null,
 
     ctor:function(){
-        this.init();
+        //this.init();
     },
 
     init:function(){
@@ -44,50 +44,38 @@ var __Utils = cc.Class.extend({
         this.toast._setHeight(cc.winSize.height / 2);
         this.toast.setAnchorPoint(cc.p(0.5,0.5));
         this.toast.setPosition(cc.p(cc.winSize.width / 4,cc.winSize.height / 4));
-        this.toast.retain();
+        this.addTipsToCurrentScene();
+        //this.toast.retain();
 
         this.toastText = cc.LabelTTF.create("", "Arial", 30);
         this.toastText.setPosition(cc.p(this.toast.getContentSize().width / 2, this.toast.getContentSize().height / 2));
         this.toast.addChild(this.toastText);
 
-        var backLabel = cc.LabelTTF("返回", "Arial", 30);
-        var btnBack = new cc.MenuItemLabel(backLabel, this.removeTipsFromCurrentScene, this);
-        var menu = cc.Menu.create(btnBack);
-        menu.setPosition(cc.p(this.toast.getContentSize().width / 2, this.toast.getContentSize().height * 0.15));
-        this.toast.addChild(menu);
     },
 
     showToast:function(msg){
-        if(this.toastText.getString() == ""){
-            this.toastText.setString(msg);
-            this.addTipsToCurrentScene();
-            this.toggleToastTouch(true);
-        }else{
-            var str = this.toastText.getString();
-            var newStr = str + "\n" + msg;
-            this.toastText.setString(newStr);
 
-            if(this.toast.getParent()){
-                this.toast.removeFromParent();
-            }
-            this.addTipsToCurrentScene();
-        };
+        this.removeTipsFromCurrentScene();
+
+        cc.log("Create new Tips. msg:" + msg);
+
+        this.init();
+        this.toastText.setString(msg);
+        this.toggleToastTouch(true);
 
     },
 
     addTipsToCurrentScene:function(){
-        cc.director.getRunningScene().addChild(this.toast,100000);
+        cc.director.getRunningScene().addChild(this.toast,100000,10086);
         cc.log("===== add tips to current scene =====");
         //cc.log("this.toastText = " + this.toastText.getString());
     },
 
     removeTipsFromCurrentScene:function(){
         cc.log("===== remove tips from current scene =====");
-        this.toastText.setString("");
-        this.toast.removeFromParent();
-        this.toggleToastTouch(false);
 
-        //cc.log("this.toastText = " + this.toastText.getString());
+        this.toggleToastTouch(false);
+        cc.director.getRunningScene().removeChildByTag(10086);
     },
 
     toggleToastTouch:function(status){
@@ -99,9 +87,8 @@ var __Utils = cc.Class.extend({
                     event: cc.EventListener.TOUCH_ONE_BY_ONE,
                     swallowTouches: true,
                     onTouchBegan: function(touch,event){
-                        var action = cc.callFunc(function(){
-                        },this);
-                        self.toast.runAction(action);
+                        self.toggleToastTouch(false);
+                        self.removeTipsFromCurrentScene();
 
                         return true;
                     }
