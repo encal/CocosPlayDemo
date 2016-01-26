@@ -50,7 +50,7 @@ var GameLayer = cc.Layer.extend({
         var info = cc.sys.localStorage.getItem("userInfo");
         if (info) {
             var data = JSON.parse(info);
-            Utils.showToast("init user info, data = " + data);
+            CocosPlay.log("init user info, data = " + data);
         }
     },
     
@@ -106,7 +106,7 @@ var GameLayer = cc.Layer.extend({
     * 显示支付窗口
     * */
     showPay: function () {
-        Utils.showToast("showPay");
+        CocosPlay.log("showPay");
         var userId = pluginManager.getUserID();
         if (userId) {
             var productId = new Date().getTime();
@@ -162,7 +162,7 @@ var GameLayer = cc.Layer.extend({
      * 显示好友列表
      * */
     showFriendList: function () {
-        Utils.showToast("showFriendList");
+        CocosPlay.log("showFriendList");
         pluginManager.getFriendsInfo(function (code, msg) {
             switch (code) {
                 case anysdk.SocialRetCode.kSocialGetFriendsInfoSuccess:
@@ -203,7 +203,7 @@ var GameLayer = cc.Layer.extend({
      * 分享功能
      * */
     share: function () {
-        Utils.showToast("share");
+        CocosPlay.log("share");
         if (pluginManager.sharePlugin) {
             var info = {};
             info = {
@@ -289,7 +289,7 @@ var GameLayer = cc.Layer.extend({
      * 返回登录页面
      * */
     back: function () {
-        Utils.showToast("GameScene back");
+        CocosPlay.log("GameScene back");
         cc.director.runScene(new LoginScene());
     }
 });
