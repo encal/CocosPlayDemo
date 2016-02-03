@@ -19,15 +19,21 @@ var PluginManager = cc.Class.extend({
     iapCallback: null,
     socialCallback: null,
     shareCallback: null,
-    ctor: function () {
-        this.initAnySDK();
-    },
-    initAnySDK: function () {
+    _initSuccessCallback: null,
+    _isInitialized: false,
+
+    initAnySDK: function (initSuccessCallback) {
+        if (this._isInitialized) {
+            initSuccessCallback();
+            return ;
+        }
+        this._initSuccessCallback = initSuccessCallback;
         CocosPlay.log("PluginManager initAnySDK");
         this.anySDKAgent = anysdk.agentManager;
         CocosPlay.log("appKey is " + appKey + ",appSecret is " + appSecret + ",privateKey is " + privateKey);
         anysdk.agentManager.init(appKey, appSecret, privateKey, oauthLoginServer);
         var self = this;
+        this.userCallback = this.initUserPluginCallback;
         this.anySDKAgent.loadAllPlugins(function (code, msg) {
             CocosPlay.log("AnySDK init: loadAllPlugins code = " + code + ", msg = " + msg);
             if (code == 0) {
@@ -58,8 +64,31 @@ var PluginManager = cc.Class.extend({
                 if (self.sharePlugin) {
                     self.sharePlugin.setListener(self.onShareResult, self);
                 }
+                this._isInitialized = true;
             }
         }, this);
+    },
+
+    initUserPluginCallback: function (code, msg) {
+        CocosPlay.log("on user result action.");
+        CocosPlay.log("code: " + code);
+        CocosPlay.log("msg: " + msg);
+
+        switch (code) {
+            case anysdk.UserActionResultCode.kInitSuccess:
+                CocosPlay.log("用户插件初始化成功");
+                if (this._initSuccessCallback) {
+                    this._initSuccessCallback();
+                    this._initSuccessCallback = null;
+                }
+                break;
+            case anysdk.UserActionResultCode.kInitFail:
+                CocosPlay.log("用户插件初始化失败");
+                break;
+            default :
+                CocosPlay.log("initUserPluginCallback未知返回码: " + code);
+
+        }
     },
 
     onUserResult: function (code, msg) {

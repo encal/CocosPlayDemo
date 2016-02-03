@@ -30,25 +30,28 @@ var LoginLayer = cc.Layer.extend({
         titleLabel.setPosition(winSize.width/2, winSize.height/2 + 200);
         this.addChild(titleLabel, 5);
 
-        /*
-         * - 根据不同的渠道环境，采取不同的登录策略
-         * 1. QQ 浏览器尝试自动登录，失败后显示登录按钮
-         * 2. QQ 大厅使用之前登录过的信息直接登录
-         * 3. 其他渠道正常显示登录按钮
-         * */
-        switch (g_env) {
-            case CocosRuntimeEnv.TENCENT:
-                this.qqLogin();
-                break;
-            case CocosRuntimeEnv.QQGAME:
-                // QQ大厅直接登录
-                this.anysdkLogin();
-                break;
-            default :
-                // 显示登录按钮，让用户授权登录
-                this.showLoginMenu();
-                break;
-        }
+        var self = this;
+        pluginManager.initAnySDK(function () {
+            /*
+             * - 用户插件初始化成功后，根据不同的渠道环境，采取不同的登录策略
+             * 1. QQ 浏览器尝试自动登录，失败后显示登录按钮
+             * 2. QQ 大厅使用之前登录过的信息直接登录
+             * 3. 其他渠道正常显示登录按钮
+             * */
+            switch (g_env) {
+                case CocosRuntimeEnv.TENCENT:
+                    self.qqLogin();
+                    break;
+                case CocosRuntimeEnv.QQGAME:
+                    // QQ大厅直接登录
+                    self.anysdkLogin();
+                    break;
+                default :
+                    // 显示登录按钮，让用户授权登录
+                    self.showLoginMenu();
+                    break;
+            }
+        });
     },
 
     loginCallback: function (code, msg) {
@@ -57,12 +60,6 @@ var LoginLayer = cc.Layer.extend({
         CocosPlay.log("msg: " + msg);
 
         switch (code) {
-            case anysdk.UserActionResultCode.kInitSuccess:
-                Utils.showToast("用户插件初始化成功");
-                break;
-            case anysdk.UserActionResultCode.kInitFail:
-                Utils.showToast("用户插件初始化失败");
-                break;
             case anysdk.UserActionResultCode.kLoginSuccess:
                 Utils.showToast("登录成功");
                 if (g_env === CocosRuntimeEnv.TENCENT) {
@@ -104,7 +101,6 @@ var LoginLayer = cc.Layer.extend({
                 break;
             case anysdk.UserActionResultCode.kGetUserInfoFail:
                 Utils.showToast("获取用户数据失败");
-                pluginManager.getUserInfo();
                 break;
             case anysdk.UserActionResultCode.kLogoutSuccess:
                 Utils.showToast("注销成功");
@@ -159,6 +155,7 @@ var LoginLayer = cc.Layer.extend({
         };
         switch (g_env) {
             case CocosRuntimeEnv.ANYSDK:
+            case CocosRuntimeEnv.H5ANYSDK:
                 if (pluginManager.isFunctionSupported("getAvailableLoginType")) {
                     pluginManager.getAvailableLoginType({}, function (code, msg) {
                         if (code === anysdk.UserActionResultCode.kGetAvailableLoginTypeSuccess) {
