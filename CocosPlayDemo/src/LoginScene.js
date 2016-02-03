@@ -155,7 +155,6 @@ var LoginLayer = cc.Layer.extend({
         };
         switch (g_env) {
             case CocosRuntimeEnv.ANYSDK:
-            case CocosRuntimeEnv.H5ANYSDK:
                 if (pluginManager.isFunctionSupported("getAvailableLoginType")) {
                     pluginManager.getAvailableLoginType({}, function (code, msg) {
                         if (code === anysdk.UserActionResultCode.kGetAvailableLoginTypeSuccess) {

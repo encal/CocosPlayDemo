@@ -13,7 +13,6 @@
       "res_engine/progress_bg.png",
       "res_engine/progress_light.png",
       "res_engine/progress_shadow.png",
-      "src/AnySDKTest/H5PluginManager.js",
       "src/AnySDKTest/PluginManager.js",
       "src/AnySDKTest/jsb_anysdk.js",
       "src/AnySDKTest/jsb_anysdk_constants.js",
