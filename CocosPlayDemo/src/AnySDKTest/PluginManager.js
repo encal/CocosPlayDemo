@@ -19,15 +19,15 @@ var PluginManager = cc.Class.extend({
     iapCallback: null,
     socialCallback: null,
     shareCallback: null,
-    _initSuccessCallback: null,
+    _initCallback: null,
     _isInitialized: false,
 
-    initAnySDK: function (initSuccessCallback) {
+    initAnySDK: function (initCallback) {
         if (this._isInitialized) {
-            initSuccessCallback();
+            initCallback(true);
             return ;
         }
-        this._initSuccessCallback = initSuccessCallback;
+        this._initCallback = initCallback;
         CocosPlay.log("PluginManager initAnySDK");
         this.anySDKAgent = anysdk.agentManager;
         CocosPlay.log("appKey is " + appKey + ",appSecret is " + appSecret + ",privateKey is " + privateKey);
@@ -77,13 +77,17 @@ var PluginManager = cc.Class.extend({
         switch (code) {
             case anysdk.UserActionResultCode.kInitSuccess:
                 CocosPlay.log("用户插件初始化成功");
-                if (this._initSuccessCallback) {
-                    this._initSuccessCallback();
-                    this._initSuccessCallback = null;
+                if (this._initCallback) {
+                    this._initCallback(true);
+                    this._initCallback = null;
                 }
                 break;
             case anysdk.UserActionResultCode.kInitFail:
                 CocosPlay.log("用户插件初始化失败");
+                if (this._initCallback) {
+                    this._initCallback(false);
+                    this._initCallback = null;
+                }
                 break;
             default :
                 CocosPlay.log("initUserPluginCallback未知返回码: " + code);

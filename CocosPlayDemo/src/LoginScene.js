@@ -31,25 +31,29 @@ var LoginLayer = cc.Layer.extend({
         this.addChild(titleLabel, 5);
 
         var self = this;
-        pluginManager.initAnySDK(function () {
-            /*
-             * - 用户插件初始化成功后，根据不同的渠道环境，采取不同的登录策略
-             * 1. QQ 浏览器尝试自动登录，失败后显示登录按钮
-             * 2. QQ 大厅使用之前登录过的信息直接登录
-             * 3. 其他渠道正常显示登录按钮
-             * */
-            switch (g_env) {
-                case CocosRuntimeEnv.TENCENT:
-                    self.qqLogin();
-                    break;
-                case CocosRuntimeEnv.QQGAME:
-                    // QQ大厅直接登录
-                    self.anysdkLogin();
-                    break;
-                default :
-                    // 显示登录按钮，让用户授权登录
-                    self.showLoginMenu();
-                    break;
+        pluginManager.initAnySDK(function (isSucceed) {
+            if (isSucceed) {
+                /*
+                 * - 用户插件初始化成功后，根据不同的渠道环境，采取不同的登录策略
+                 * 1. QQ 浏览器尝试自动登录，失败后显示登录按钮
+                 * 2. QQ 大厅使用之前登录过的信息直接登录
+                 * 3. 其他渠道正常显示登录按钮
+                 * */
+                switch (g_env) {
+                    case CocosRuntimeEnv.TENCENT:
+                        self.qqLogin();
+                        break;
+                    case CocosRuntimeEnv.QQGAME:
+                        // QQ大厅直接登录
+                        self.anysdkLogin();
+                        break;
+                    default :
+                        // 显示登录按钮，让用户授权登录
+                        self.showLoginMenu();
+                        break;
+                }
+            } else {
+                Utils.showToast("AnySDK初始化失败");
             }
         });
     },
