@@ -2,12 +2,6 @@
  * Created by encal on 15/12/10.
  */
 
-// 注意：这里appKey, appSecret, privateKey, cocosplay-demo的参数, 游戏不可以使用此参数上线。
-var appKey      = "78CF9F96-0D1B-4328-B81D-1FF2476A9B3D";
-var appSecret   = "76e5378978fc439132ef61d4abbb5b97";
-var privateKey  = "3B57E68AD0407E819EDF1B3779FD74C9";
-var oauthLoginServer = "http://182.254.241.97:56999/coco_login";
-
 var PluginManager = cc.Class.extend({
     anySDKAgent: null,
     userPlugin: null,
@@ -30,8 +24,11 @@ var PluginManager = cc.Class.extend({
         this._initCallback = initCallback;
         CocosPlay.log("PluginManager initAnySDK");
         this.anySDKAgent = anysdk.agentManager;
-        CocosPlay.log("appKey is " + appKey + ",appSecret is " + appSecret + ",privateKey is " + privateKey);
-        anysdk.agentManager.init(appKey, appSecret, privateKey, oauthLoginServer);
+        if (cc.sys.isNative) {
+            anysdk.agentManager.init(anysdkParams.appKey, anysdkParams.appSecret, anysdkParams.privateKey, anysdkParams.oauthLoginServer);
+        } else {
+            anysdk.agentManager.init();
+        }
         var self = this;
         this.userCallback = this.initUserPluginCallback;
         this.anySDKAgent.loadAllPlugins(function (code, msg) {
@@ -194,6 +191,20 @@ var PluginManager = cc.Class.extend({
     },
 
     /**
+     * 发送到桌面快捷方式
+     * */
+    getLoginType: function() {
+        CocosPlay.log("getLoginType");
+        if (this.userPlugin.getLoginType) {
+            return this.userPlugin.getLoginType();
+        } else {
+            CocosPlay.log("Oops : getLoginType isn't supported!");
+            return "";
+        }
+    },
+
+
+    /**
      * 打开话题圈/论坛
      * */
     openTopic: function (param, callback) {
@@ -283,7 +294,7 @@ var PluginManager = cc.Class.extend({
 });
 
 // 目前 QQ浏览器 || QQ空间玩吧 || 猎豹浏览器 || 百度浏览器 暂时需要特殊处理，还不能使用此 DEMO 的代码
-if (cc.runtime && cc.runtime.config && cc.runtime.config["channel_id"] != "100115"
+if (!cc.sys.isNative || cc.runtime && cc.runtime.config && cc.runtime.config["channel_id"] != "100115"
     && cc.runtime.config["channel_id"] != "100117" && cc.runtime.config["channel_id"] != "100206"
     && cc.runtime.config["channel_id"] != "100125" ) {
     var _pluginManager = null;
@@ -293,5 +304,4 @@ if (cc.runtime && cc.runtime.config && cc.runtime.config["channel_id"] != "10011
         }
         return _pluginManager;
     }();
-    CocosPlay.log("channel id is " + cc.runtime.config["channel_id"]);
 }
