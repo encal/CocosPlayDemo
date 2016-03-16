@@ -14,7 +14,7 @@ var CocosRuntimeEnv = {
     H5ANYSDK: 999999
 };
 
-var g_env = CocosRuntimeEnv.ANYSDK;
+var g_env = cc.sys.isNative ? CocosRuntimeEnv.ANYSDK : CocosRuntimeEnv.H5ANYSDK;
 
 var LoginActionType = {
     DIRECT  : 100,

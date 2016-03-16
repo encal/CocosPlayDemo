@@ -9,7 +9,7 @@
     "noCache" : 1,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["cocos2d"],
+    "modules" : ["cocos2d", "extensions"],
 
     "jsList" : [
         "src/Common/GameConst.js",
@@ -23,6 +23,7 @@
 
         "src/AnySDKTest/jsb_anysdk.js",
         "src/AnySDKTest/jsb_anysdk_constants.js",
+        "src/AnySDKTest/jsb_anysdk_params.js",
         "src/AnySDKTest/PluginManager.js",
 
         "src/QQBrowserTest/Item.js"

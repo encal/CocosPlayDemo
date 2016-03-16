@@ -16,6 +16,7 @@
       "src/AnySDKTest/PluginManager.js",
       "src/AnySDKTest/jsb_anysdk.js",
       "src/AnySDKTest/jsb_anysdk_constants.js",
+      "src/AnySDKTest/jsb_anysdk_params.js",
       "src/Common/GameConst.js",
       "src/Common/Utils.js",
       "src/GameScene.js",
