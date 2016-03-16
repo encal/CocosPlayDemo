@@ -191,20 +191,6 @@ var PluginManager = cc.Class.extend({
     },
 
     /**
-     * 发送到桌面快捷方式
-     * */
-    getLoginType: function() {
-        CocosPlay.log("getLoginType");
-        if (this.userPlugin.getLoginType) {
-            return this.userPlugin.getLoginType();
-        } else {
-            CocosPlay.log("Oops : getLoginType isn't supported!");
-            return "";
-        }
-    },
-
-
-    /**
      * 打开话题圈/论坛
      * */
     openTopic: function (param, callback) {
