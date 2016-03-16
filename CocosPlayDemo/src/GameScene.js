@@ -110,11 +110,11 @@ var GameLayer = cc.Layer.extend({
         var userId = pluginManager.getUserID();
         if (userId) {
             var productId = new Date().getTime();
-            var ext = this.getOrderId + "_" + userId;
+            var ext = this.getOrderId() + "_" + userId;
             var info = {
                 Product_Price   : "1",
                 Product_Id      : productId + "",
-                Product_Name    : "EnCaL Gold",
+                Product_Name    : "新手大礼包",
                 Server_Id       : "13",
                 Product_Count   : "1",
                 Role_Id         : userId + "",

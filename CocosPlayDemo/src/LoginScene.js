@@ -33,24 +33,15 @@ var LoginLayer = cc.Layer.extend({
         var self = this;
         pluginManager.initAnySDK(function (isSucceed) {
             if (isSucceed) {
-                /*
-                 * - 用户插件初始化成功后，根据不同的渠道环境，采取不同的登录策略
-                 * 1. QQ 浏览器尝试自动登录，失败后显示登录按钮
-                 * 2. QQ 大厅使用之前登录过的信息直接登录
-                 * 3. 其他渠道正常显示登录按钮
-                 * */
-                switch (g_env) {
-                    case CocosRuntimeEnv.TENCENT:
-                        self.qqLogin();
-                        break;
-                    case CocosRuntimeEnv.QQGAME:
-                        // QQ大厅直接登录
-                        self.anysdkLogin();
-                        break;
-                    default :
-                        // 显示登录按钮，让用户授权登录
+                if (pluginManager.isFunctionSupported("isTokenValid")) {
+                    if (pluginManager.isTokenValid()) {
+                        self.login();
+                    } else {
+                        CocosPlay.log("isTokenInvalid !!!")
                         self.showLoginMenu();
-                        break;
+                    }
+                } else {
+                    self.showLoginMenu();
                 }
             } else {
                 Utils.showToast("AnySDK初始化失败");
@@ -119,22 +110,11 @@ var LoginLayer = cc.Layer.extend({
         }
     },
 
-    anysdkLogin: function () {
-        pluginManager.login(this.loginCallback.bind(this));
-    },
-
-    qqLogin: function () {
-        pluginManager.setLoginType("qq");
-        pluginManager.login(this.loginCallback.bind(this));
-    },
-
-    wechatLogin: function () {
-        pluginManager.setLoginType("wx");
-        pluginManager.login(this.loginCallback.bind(this));
-    },
-
-    guestLogin: function () {
-        pluginManager.setLoginType("guest");
+    // 登录
+    login: function (sender) {
+        if (sender && sender.loginType != null) {
+            pluginManager.setLoginType(sender.loginType);
+        }
         pluginManager.login(this.loginCallback.bind(this));
     },
 
@@ -170,15 +150,18 @@ var LoginLayer = cc.Layer.extend({
                                 for (var pos in loginTypes) {
                                     if (loginTypes[pos]["loginType"] == "qq") {
                                         var qqLoginLabel = new cc.LabelTTF("QQ登录", "Arial", 38);
-                                        var qqLoginItem = new cc.MenuItemLabel(qqLoginLabel, self.qqLogin, self);
+                                        var qqLoginItem = new cc.MenuItemLabel(qqLoginLabel, self.login, self);
+                                        qqLoginItem.loginType = "qq";
                                         loginItemList.push(qqLoginItem);
                                     } else if (loginTypes[pos]["loginType"] == "wx") {
                                         var wechatLoginLabel = new cc.LabelTTF("微信登录", "Arial", 38);
-                                        var wechatLoginItem = new cc.MenuItemLabel(wechatLoginLabel, self.wechatLogin, self);
+                                        var wechatLoginItem = new cc.MenuItemLabel(wechatLoginLabel, self.login, self);
+                                        wechatLoginItem.loginType = "wx";
                                         loginItemList.push(wechatLoginItem);
                                     } else if (loginTypes[pos]["loginType"] == "guest") {
                                         var guestLoginLabel = new cc.LabelTTF("游客登录", "Arial", 38);
-                                        var guestLoginItem = new cc.MenuItemLabel(guestLoginLabel, self.guestLogin, self);
+                                        var guestLoginItem = new cc.MenuItemLabel(guestLoginLabel, self.login, self);
+                                        guestLoginItem.loginType = "guest";
                                         loginItemList.push(guestLoginItem);
                                     } else {
                                         CocosPlay.log("未知的登录类型：" + loginTypes[pos]["loginType"]);
@@ -186,7 +169,7 @@ var LoginLayer = cc.Layer.extend({
                                 }
                             } else {
                                 var anySDKLoginLabel = new cc.LabelTTF("登录", "Arial", 38);
-                                var anySDKLoginItem = new cc.MenuItemLabel(anySDKLoginLabel, self.anysdkLogin, self);
+                                var anySDKLoginItem = new cc.MenuItemLabel(anySDKLoginLabel, self.login, self);
                                 loginItemList.push(anySDKLoginItem);
                             }
                             initLoginItemList();
@@ -198,7 +181,7 @@ var LoginLayer = cc.Layer.extend({
                     });
                 } else {
                     var anySDKLoginLabel = new cc.LabelTTF("登录", "Arial", 38);
-                    var anySDKLoginItem = new cc.MenuItemLabel(anySDKLoginLabel, this.anysdkLogin, this);
+                    var anySDKLoginItem = new cc.MenuItemLabel(anySDKLoginLabel, this.login, this);
                     loginItemList.push(anySDKLoginItem);
                     initLoginItemList();
                 }
@@ -222,24 +205,20 @@ var LoginLayer = cc.Layer.extend({
     // 登录成功后，显示进入游戏按钮
     showGameEntry: function () {
         this.buttonLayer.removeAllChildren();
+        var functionList = [];
         var winSize = cc.winSize;
         var gameEntryLabel = new cc.LabelTTF("进入游戏", "Arial", 38);
         var gameEntryItem = new cc.MenuItemLabel(gameEntryLabel, function() {
             cc.director.runScene(new GameScene());
         }, this);
+        functionList.push(gameEntryItem);
 
-        var logoutLabel = new cc.LabelTTF("退出登录", "Arial", 38);
-        var logoutItem = new cc.MenuItemLabel(logoutLabel, this.logout, this);
-
-        var gameEntryMenu;
-        switch (g_env) {
-            case CocosRuntimeEnv.TENCENT:
-                gameEntryMenu = new cc.Menu(gameEntryItem, logoutItem);
-                break;
-            default :
-                gameEntryMenu = new cc.Menu(gameEntryItem);
-                break;
+        if (pluginManager.isFunctionSupported("logout")) {
+            var logoutLabel = new cc.LabelTTF("登出", "Arial", 38);
+            var logoutItem = new cc.MenuItemLabel(logoutLabel, this.logout, this);
+            functionList.push(logoutItem);
         }
+        var gameEntryMenu = new cc.Menu(functionList);
 
         gameEntryMenu.attr({
             x : winSize.width/2,
@@ -251,7 +230,6 @@ var LoginLayer = cc.Layer.extend({
 
     // 登出
     logout: function () {
-        CocosPlay.log("logout");
         pluginManager.logout(this.loginCallback.bind(this));
     }
 

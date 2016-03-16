@@ -10,8 +10,8 @@ var CocosRuntimeEnv = {
     BAIDU   : 100117,
     LIEBAO  : 100125,
     WANBA   : 100206,
-    QQGAME  : 100217,
-    ANYSDK  : 888888
+    ANYSDK  : 888888,
+    H5ANYSDK: 999999
 };
 
 var g_env = CocosRuntimeEnv.ANYSDK;

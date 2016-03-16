@@ -131,6 +131,7 @@ var PluginManager = cc.Class.extend({
      * 登录
      * */
     login: function (callback) {
+        CocosPlay.log("login");
         if (callback) this.userCallback = callback;
         this.userPlugin.login();
     },
@@ -141,8 +142,8 @@ var PluginManager = cc.Class.extend({
     logout: function (callback) {
         CocosPlay.log("logout");
         if (callback) this.userCallback = callback;
-        if (this.userPlugin.isFunctionSupported("logout")) {
-            this.userPlugin.callFuncWithParam("logout");
+        if (this.userPlugin.logout) {
+            this.userPlugin.logout();
         }
     },
 
@@ -159,13 +160,10 @@ var PluginManager = cc.Class.extend({
     getUserInfo: function (callback) {
         CocosPlay.log("getUserInfo");
         if (callback) this.userCallback = callback;
-        //todo 暂不支持直接调用, bug 定位中。。。
-        //this.userPlugin.getUserInfo();
-        var functionName = "getUserInfo";
-        if (this.userPlugin.isFunctionSupported(functionName)){
-            this.userPlugin.callFuncWithParam(functionName);
+        if (this.userPlugin.getUserInfo){
+            this.userPlugin.getUserInfo();
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : getUserInfo isn't supported!");
         }
     },
 
@@ -175,7 +173,9 @@ var PluginManager = cc.Class.extend({
     pay: function (param, callback) {
         CocosPlay.log("pay");
         if (callback) this.iapCallback = callback;
-        anysdk.ProtocolIAP.resetPayState();
+        if (cc.sys.isNative) {
+            anysdk.ProtocolIAP.resetPayState();
+        }
         cc.log("send info is "+JSON.stringify(param));
         this.iapPlugin.payForProduct(param);
     },
@@ -186,12 +186,10 @@ var PluginManager = cc.Class.extend({
     sendToDesktop: function(param, callback) {
         CocosPlay.log("sendToDesktop");
         if (callback) this.userCallback = callback;
-        //todo 暂不支持直接调用, bug 定位中。。。
-        var functionName = "sendToDesktop";
-        if (this.userPlugin.isFunctionSupported(functionName)) {
-            this.userPlugin.callFuncWithParam(functionName, anysdk.PluginParam.create(param));
+        if (this.userPlugin.sendToDesktop) {
+            this.userPlugin.sendToDesktop(param);
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : sendToDesktop isn't supported!");
         }
     },
 
@@ -199,13 +197,12 @@ var PluginManager = cc.Class.extend({
      * 打开话题圈/论坛
      * */
     openTopic: function (param, callback) {
-        CocosPlay.log("openTopic");
+        CocosPlay.log("openBBS");
         if (callback) this.userCallback = callback;
-        var functionName = "openBBS";
-        if (this.userPlugin.isFunctionSupported(functionName)) {
-            this.userPlugin.callFuncWithParam(functionName, anysdk.PluginParam.create(param));
+        if (this.userPlugin.openBBS) {
+            this.userPlugin.openBBS(param);
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : openBBS isn't supported!");
         }
     },
 
@@ -215,11 +212,10 @@ var PluginManager = cc.Class.extend({
     getAvailableLoginType: function (param, callback) {
         CocosPlay.log("getAvailableLoginType");
         if (callback) this.userCallback = callback;
-        var functionName = "getAvailableLoginType";
-        if (this.userPlugin.isFunctionSupported(functionName)) {
-            this.userPlugin.callFuncWithParam(functionName, anysdk.PluginParam.create(param));
+        if (this.userPlugin.getAvailableLoginType) {
+            this.userPlugin.getAvailableLoginType(param);
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : getAvailableLoginType isn't supported!");
         }
     },
 
@@ -227,12 +223,11 @@ var PluginManager = cc.Class.extend({
      * 设置登录类型
      * */
     setLoginType: function (param) {
-        CocosPlay.log("setLoginType");
-        var functionName = "setLoginType";
-        if (this.userPlugin.isFunctionSupported(functionName)) {
-            this.userPlugin.callFuncWithParam(functionName, anysdk.PluginParam.create(param));
+        CocosPlay.log("setLoginType : " + param);
+        if (this.userPlugin.setLoginType) {
+            this.userPlugin.setLoginType(param);
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : setLoginType isn't supported!");
         }
     },
 
@@ -242,7 +237,11 @@ var PluginManager = cc.Class.extend({
     share: function (param, callback) {
         CocosPlay.log("share");
         if (callback) this.shareCallback = callback;
-        this.sharePlugin.share(param);
+        if (this.sharePlugin.share) {
+            this.sharePlugin.share(param);
+        } else {
+            CocosPlay.log("Oops : share isn't supported!");
+        }
     },
 
     /**
@@ -251,11 +250,23 @@ var PluginManager = cc.Class.extend({
     getFriendsInfo: function (callback) {
         CocosPlay.log("getFriendsInfo");
         if (callback) this.socialCallback = callback;
-        var functionName = "getFriendsInfo";
-        if (this.socialPlugin.isFunctionSupported(functionName)) {
-            this.socialPlugin.callFuncWithParam(functionName);
+        if (this.socialPlugin.getFriendsInfo) {
+            this.socialPlugin.getFriendsInfo();
         } else {
-            CocosPlay.log("Oops :" + functionName + " isn't supported!");
+            CocosPlay.log("Oops : getFriendsInfo isn't supported!");
+        }
+    },
+
+    /**
+     * 个别渠道特殊的接口，判断token是否有效
+     * */
+    isTokenValid: function () {
+        CocosPlay.log("isTokenValid");
+        if (this.userPlugin.isTokenValid) {
+            return this.userPlugin.isTokenValid();
+        } else {
+            CocosPlay.log("Oops : isTokenValid isn't supported!");
+            return false;
         }
     },
 
@@ -269,7 +280,6 @@ var PluginManager = cc.Class.extend({
         if (this.socialPlugin && (this.socialPlugin[functionName] || this.socialPlugin.isFunctionSupported(functionName))) return true;
         return false;
     }
-
 });
 
 // 目前 QQ浏览器 || QQ空间玩吧 || 猎豹浏览器 || 百度浏览器 暂时需要特殊处理，还不能使用此 DEMO 的代码
@@ -283,8 +293,5 @@ if (cc.runtime && cc.runtime.config && cc.runtime.config["channel_id"] != "10011
         }
         return _pluginManager;
     }();
-    if (cc.runtime.config["channel_id"] == "100217") {
-        g_env = CocosRuntimeEnv.QQGAME;
-    }
     CocosPlay.log("channel id is " + cc.runtime.config["channel_id"]);
 }
